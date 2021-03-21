@@ -1,0 +1,239 @@
+---
+title: "Hw1"
+author: "Runcheng Liu 2018010316"
+output: html_document
+---
+
+
+## 1.1
+For $S S_{tot}$,
+$$
+\begin{align}
+S S_{t o t}=\sum_{i=1}^{n}\left(y_{i}-\bar{y}\right)^{2}&=\begin{pmatrix}y_{1}-\bar{y}&\cdots&y_{n}-\bar{y}\end{pmatrix}\begin{pmatrix}y_{1}-\bar{y}\\\vdots\\y_{n}-\bar{y}\end{pmatrix}\\&=\left(y^\intercal-\bar{y}\mathbf{1}^\intercal\right)\left(y-\bar{y}\mathbf{1}\right)\\&=y^\intercal\left(\mathbf{I}_{n}-\mathbf{11^\intercal/n}\right)y
+\end{align}
+$$
+For $S S_{reg}$,
+$$
+\begin{align}
+S S_{r e g}=\sum_{i=1}^{n}\left(\hat{y_{i}}-\bar{y}\right)^{2}&=\begin{pmatrix}\hat{y_{1}}-\bar{y}&\cdots&\hat{y_{n}}-\bar{y}\end{pmatrix}\begin{pmatrix}\hat{y_{1}}-\bar{y}\\\vdots\\\hat{y_{n}}-\bar{y}\end{pmatrix}\\&=\hat{y}^\intercal\left(\mathbf{I}_{n}-\mathbf{11^\intercal}\right)\hat{y}\\&=\left(Py\right)^\intercal\left(\mathbf{I}_{n}-\mathbf{11^\intercal}\right)\left(Py\right)\\&=y^\intercal P^\intercal (\mathbf{I}_{n}-\mathbf{11^\intercal/n})Py
+\end{align}
+$$
+
+For $S S_{res}$,
+$$
+\begin{align}
+S S_{res} = \sum_{i=1}^{n}\left(y_{i}-\hat{y}_{i}\right)^2&=\begin{pmatrix}y_{1}-\hat{y}_{1}&\cdots&y_{n}-\hat{y}_{n}\end{pmatrix}\begin{pmatrix}y_{1}-\hat{y}_{1}\\\vdots\\y_{n}-\hat{y}_{n}\end{pmatrix}\\&=\left(y^\intercal-\hat{y}^\intercal\right)\left(y-\hat{y}\right)\\&=y^\intercal\left(\mathbf{I}_{n}-P\right)y
+\end{align}
+$$
+
+Use the above three fomulas, thus:
+$$
+\begin{align}
+S S_{reg} + S S_{res} &= y^\intercal P^\intercal (\mathbf{I}_{n}-\mathbf{11^\intercal/n})Py + y^\intercal\left(\mathbf{I}_{n}-P\right)y\\&=y^\intercal\left(P^\intercal P-P^\intercal\mathbf{11^\intercal/n}P+\mathbf{I}_{n}-P\right)y\\&=y^\intercal\left(P-\left(P\mathbf{1}\right)^\intercal \left(P\mathbf{1}\right)/n + \mathbf{I}_{n}-P\right)y\\&=y^\intercal \left(\mathbf{I}_{n}-\mathbf{11^\intercal}/n\right)y\\&=S S_{t o t} 
+\end{align}
+$$
+
+## 1.2
+We know,
+$$
+R^{2}=\frac{\mathrm{TSS}-\mathrm{RSS}}{\mathrm{TSS}}=1-\frac{\mathrm{RSS}}{\mathrm{TSS}}
+$$
+TSS measures the total variance in the response Y , and can be squares thought of as the amount of variability inherent in the response before the
+regression is performed. In contrast, RSS measures the amount of variability that is left unexplained after performing the regression. Hence, TSS − RSS
+measures the amount of variability in the response that is explained (or removed) by performing the regression, and $R^2$ measures the proportion
+of variability in Y that can be explained using X. An $R^2$ statistic that is close to 1 indicates that a large proportion of the variability in the response
+has been explained by the regression. A number near 0 indicates that the regression did not explain much of the variability in the response; this might
+occur because the linear model is wrong, or the inherent error $\sigma^2$ is high, or both.
+
+## 1.3
+First, we know that,
+$$
+\operatorname{Var} \left(\hat{\beta}_{j}\right) = {\sigma}^2 \left(\left(X^\intercal X\right)^{-1}\right)_{jj}
+$$
+Now let $r=X^\intercal X$, and without losing generality, we reorder the columns of X to set the first column to be $X_{j}$,
+$$
+\begin{aligned}
+r^{-1} &=\left[\begin{array}{cc}
+r_{j, j} & r_{j,-j} \\
+r_{-j, j} & r_{-j,-j}
+\end{array}\right]^{-1} \\
+r_{j, j} &=X_{j}^{T} X_{j}, r_{j,-j}=X_{j}^{T} X_{-j}, r_{-j, j}=X_{-j}^{T} X_{j}, r_{-j,-j}=X_{-j}^{T} X_{-j}
+\end{aligned}
+$$
+By using Schur complement, the element in the first row and first column in $r^{-1}$ is,
+$$
+r_{1,1}^{-1}=\left[r_{j, j}-r_{j,-j} r_{-j,-j}^{-1} r_{-j, j}\right]^{-1}
+$$
+Then we have,
+$$
+\begin{aligned}
+& \operatorname{Var}\left(\hat{\beta}_{j}\right)=\sigma^{2}\left[\left(X^{T} X\right)^{-1}\right]_{j j}=\sigma^{2} r_{1,1}^{-1} \\
+=& \sigma^{2}\left[X_{j}^{T} X_{j}-X_{j}^{T} X_{-j}\left(X_{-j}^{T} X_{-j}\right)^{-1} X_{-j}^{T} X_{j}\right]^{-1} \\
+\end{aligned}
+$$
+And we have,
+$$
+RSS_{j} = \sum_{i=1}^{n} \left(X_{ij}-\bar{X}_{j}\right)^2=X^\intercal_{j} \left(\mathbf{I}_{n}-P \right)X_{j} = X_{i}^\intercal X_{j} - X^\intercal _{j}PX_{j}=X^\intercal_{j}X_{j}-X^\intercal_{j}X_{j}-X^\intercal_{j}X_{-j}\left(X^\intercal_{-j}X_{-j}\right)^{-1}X^\intercal_{j}X_{j}
+$$
+Put this into the last formula, so,
+$$
+\begin{align}
+\operatorname{Var}\left(\hat{\beta}_{j}\right) &= s^{2}\left[X_{j}^{T} X_{j}-X_{j}^{T} X_{-j}\left(X_{-j}^{T} X_{-j}\right)^{-1} X_{-j}^{T} X_{j}\right]^{-1} \\
+&=\sigma^{2} \frac{1}{RSS_{j}} \\
+&=\frac{\sigma^{2}}{(n-1) S_{x_{j}}^2} \cdot \frac{1}{1-R_{j}^{2}}
+\end{align}
+$$
+
+## 2
+
+Prove $\hat{\beta_{0}}$ is BLUE is equivalent as proving $\hat{\beta}$ is BLUE.
+First, prove $\hat{\beta}$ is unbiased, use definition and the law of total expectation, we have,
+$$
+\begin{align}
+\operatorname{E}\left[\hat{\beta}\right] &= \operatorname{E}\left[\left(X^\intercal X \right)^{-1} X^\intercal y\right] \\
+&=\operatorname{E}\left[\left(X^\intercal X \right)^{-1} X^\intercal \left(X\beta+\varepsilon \right)\right] \\
+&= \beta + \operatorname{E}\left[\left(X^\intercal X \right)^{-1} X^\intercal \varepsilon\right] \\
+&= \beta + \operatorname{E}\left[\operatorname{E}\left[\left(X^\intercal X \right)^{-1} X^\intercal \varepsilon | X\right] \right] \\
+&= \beta + \operatorname{E}\left[\left(X^\intercal X\right)^{-1}X^\intercal \operatorname{E}\left[\varepsilon|X\right]\right] \\
+&= \beta
+\end{align}
+$$
+Where $\operatorname{E}\left[\epsilon|X \right]=0$ by the assumption of the model. So $\hat{\beta}$ is unbiased.
+
+Then prove $\hat{\beta}$'s variance is minimal, let $\tilde{\beta}=Cy$ be another linear estimator of $\beta$  with $C=(X^\intercal X)^{-1}X^\intercal+D$ where D is a  $K\times n$ non-zero matrix. As we're restricting to unbiased estimators, minimum mean squared error implies minimum variance. The goal is therefore to show that such an estimator has a variance no smaller than that of $\hat{\beta}$, the OLS estimator. We calculate,
+$$
+\begin{aligned}
+\mathrm{E}[\tilde{\beta}] &=\mathrm{E}[C y] \\
+&=\mathrm{E}\left[\left(\left(X^{\prime} X\right)^{-1} X^{\prime}+D\right)(X \beta+\varepsilon)\right] \\
+&=\left(\left(X^{\prime} X\right)^{-1} X^{\prime}+D\right) X \beta+\left(\left(X^{\prime} X\right)^{-1} X^{\prime}+D\right) \mathrm{E}[\varepsilon] \\
+&\overset{\mathrm{E}[\varepsilon]=0}{=}\left(\left(X^{\prime} X\right)^{-1} X^{\prime}+D\right) X \beta \\
+&=\left(X^{\prime} X\right)^{-1} X^{\prime} X \beta+D X \beta \\
+&=\left(I_{K}+D X\right) \beta
+\end{aligned}
+$$
+Therefore, since $\beta$ is unobservable, and $\tilde{\beta}$ is unbiased if and only if $DX=0$. Then,
+$$
+\begin{aligned}
+\operatorname{Var}(\tilde{\beta}) &=\operatorname{Var}(C y) \\
+&=C \operatorname{Var}(y) C^{\intercal} \\
+&=\sigma^{2} C C^{\intercal} \\
+&=\sigma^{2}\left(\left(X^{\intercal} X\right)^{-1} X^{\intercal}+D\right)\left(X\left(X^{\intercal} X\right)^{-1}+D^{\intercal}\right) \\
+&=\sigma^{2}\left(\left(X^{\intercal} X\right)^{-1} X^{\intercal} X\left(X^{\intercal} X\right)^{-1}+\left(X^{\intercal} X\right)^{-1} X^{\intercal} D^{\intercal}+D X\left(X^{\intercal} X\right)^{-1}+D D^{\intercal}\right) \\
+&=\sigma^{2}\left(X^{\intercal} X\right)^{-1}+\sigma^{2}\left(X^{\intercal} X\right)^{-1}(D X)^{\intercal}+\sigma^{2} D X\left(X^{\intercal} X\right)^{-1}+\sigma^{2} D D^{\intercal} \\
+&\overset{DX=0}{=}\sigma^{2}\left(X^{\intercal} X\right)^{-1}+\sigma^{2} D D^{\intercal} \\
+&\overset{\operatorname{Var(\hat{\beta})=\sigma^2(X^\intercal X)^{-1}}}{=}\operatorname{Var}(\widehat{\beta})+\sigma^{2} D D^{\intercal}
+\end{aligned}
+$$
+Since $DD^{\intercal}$ is positive semidefinitive matrix. $\operatorname{Var}(\tilde{\beta})$ is always bigger than $\operatorname{Var}(\hat{\beta})$.
+
+## 3.1
+First, the ordinary least squares model posits that the conditioning distribution of the response y is,
+$$
+y \mid X, \beta \sim \mathcal{N}\left(X \beta, \sigma^{2} I\right)
+$$
+Also we know the prior distribution of $\beta$,
+$$
+\beta \sim \mathcal{N}\left(0, \sigma^{2} I/{\lambda}\right)
+$$
+Thus,
+$$
+\begin{align}
+\hat{\beta}^{M A P} &= \arg \max _{\beta} \prod_{i=1}^{n}P(Y_{i}|X_{i},\beta)P(\beta) \\
+&=\arg \max _{\beta} \operatorname{log} \left(\prod_{i=1}^{n}P\left(Y_{i}|X_{i},\beta \right) P\left(\beta \right)\right) \\
+&=\arg \max _{\beta}  \left(\sum_{i=1}^{n} \operatorname{log} P\left(Y_{i}|X_{i},\beta \right) +\operatorname{log}P\left(\beta \right)\right) \\
+&=\arg \max _{\beta} \left( \sum_{i=1}^{n}-\frac{\left(Y_{i}-X_{i}^\intercal \beta\right)^2}{2\sigma^2\mathbf{I}}-\frac{\lambda\|\beta\|_{2}^{2},}{2\mathbf{I}\sigma^2}\right) \\
+&=\arg \min _{\beta} \left(Y_{i}-X_{i}^\intercal \beta \right)^2 + \lambda\|\beta\|^2_{2} \\
+&=\arg \min _{\beta}(X \beta-Y)^{T}(X \beta-Y)+\lambda\|\beta\|^{2}_{2}
+\end{align}
+$$
+
+## 3.2
+
+As $\lambda \rightarrow 0$, the prior distribution $P(\beta)$ is very wide, which means that $\beta$ has huge variance, thus is not constrained.
+However, as $\lambda \rightarrow \infty$, the prior distribution $P(\beta)$ is very narrow, which means that $\beta$ has small variance, thus is constrained.
+
+## 4
+```{r}
+#Load data
+prostate <- read.csv("prostate.csv")
+train = subset(prostate, train==TRUE)
+test = subset(prostate, train==FALSE)
+
+
+#Split data into training data and test data
+train_x=model.matrix(lpsa~. ,train[,c("lcavol","lweight","age","lbph","svi","lcp","gleason","pgg45","lpsa")])[,-1]
+train_y=train$lpsa
+test_x=model.matrix(lpsa~. ,test[,c("lcavol","lweight","age","lbph","svi","lcp","gleason","pgg45","lpsa")])[,-1]
+test_y=test$lpsa
+library(glmnet)
+
+
+#Ridge regression
+grid=seq(0,1, length =100)
+ridge.mod=glmnet (train_x,train_y,alpha=0, lambda=grid, thresh =1e-12)
+
+
+#5-fold Cross-validation
+set.seed(1)
+cv.out=cv.glmnet(train_x,train_y,alpha=0, nfolds = 5, lambda=grid, type.measure = "mse")
+cvm_5 = rev(cv.out$cvm)
+
+#Minimum MSE of lambda for 5-fold
+bestlam_5 =cv.out$lambda.min
+bestlam_5
+
+
+#10-fold Cross-validation
+set.seed(1)
+cv.out=cv.glmnet(train_x,train_y,alpha=0, nfolds = 10, lambda=grid, type.measure = "mse")
+cvm_10 = rev(cv.out$cvm)
+
+#Minimum MSE of lambda for 10-fold
+bestlam_10 =cv.out$lambda.min
+bestlam_10
+
+#Training error
+train_error = c()
+for (p in grid){
+  ridge.pred=predict (ridge.mod ,s=p ,newx=train_x)
+  train_error = c(mean((ridge.pred -train_y)^2), train_error)
+}
+train_error = rev(train_error)
+
+
+#Test error
+test_error = c()
+for (p in grid){
+  ridge.pred=predict (ridge.mod ,s=p ,newx=test_x)
+  test_error = c(mean((ridge.pred -test_y)^2), test_error)
+}
+test_error = rev(test_error)
+
+# PLot
+plot(grid, cvm_5, col="red", ylim = c(0.3, 0.8), main = "Prostate", xlab = "lambda", ylab="MSE")
+lines(grid, cvm_10, col="black")
+lines(grid,train_error,col="blue")
+lines(grid,test_error,col="green")
+legend("bottomright",legend=c("5-fold","10-fold","training","test"), text.col = c("red","black","blue","green"))
+
+```
+
+From the above results, we can see that the training error, test error, 5-fold cross-validation error, 10-fold cross-validation for training, test, 5-fold cross-validation, 10-fold cross-validation respectively with respect to $\lambda$. I find that 5-fold cross-validation error, 10-fold cross-validation error are always larger than training error, test error. I think the reason for this is that the size of test and training data are larger than size of cross-validation data, thus the error is lower. I also find out that sometimes 5-fold cross-validation error is bigger than 10-fold cross-validation error, sometimes is reverse, unless you fix the random seed. For this random seed(which controls the splits of k-fold), the optimal $\lambda$ for 5-fold and 10-fold cross-validation are 0.05 and 0.06 respectively.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
