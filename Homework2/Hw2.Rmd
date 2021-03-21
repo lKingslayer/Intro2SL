@@ -1,0 +1,335 @@
+---
+title: "Hw2"
+author: "Runcheng Liu 2018010316"
+date: "3/15/2021"
+output: html_document
+---
+
+## 1
+In LDA, suppose that we model each class density as multivariate Gaussian,
+$$
+f_{k}(x)=\frac{1}{(2 \pi)^{p / 2}\left|\Sigma_{k}\right|^{1 / 2}} \exp \left\{-\frac{1}{2}\left(x-\mu_{k}\right)^{T} \Sigma_{k}^{-1}\left(x-\mu_{k}\right)\right\}
+$$
+In comparing two classes k and l, it is sufficient to look at the log-ratio,
+$$
+\log \frac{P(k \mid x)}{P(l \mid x)}=\log \frac{f_{k}(x) \pi_{k}}{f_{l}(x) \pi_{l}}
+$$
+LDA arises in the speacial case when we assume that the classes have a common covariance matrix $\Sigma_{k}=\Sigma$, for any k, thus,
+$$
+\begin{aligned}
+\log \frac{P(k \mid x)}{P(l \mid x)} &=\log \frac{f_{k}(x) \pi_{k}}{f_{l}(x) \pi_{l}} \\
+&=\log \frac{\pi_{k}}{\pi_{l}}-\frac{1}{2}\left(\mu_{k}+\mu_{l}\right)^{T} \Sigma^{-1}\left(\mu_{k}-\mu_{l}\right)+x^{T} \Sigma^{-1}\left(\mu_{k}-\mu_{l}\right) \\
+&=\left(\log \pi_{k} + x^\intercal \Sigma^{-1}\mu_{k} - \frac{1}{2}\mu_{k}\Sigma^{-1}\mu_{k} \right) - \left(\log \pi_{l} + x^\intercal \Sigma^{-1}\mu_{l} - \frac{1}{2}\mu_{l}\Sigma^{-1}\mu_{l} \right) \\
+&=\delta_{k} - \delta_{l}
+\end{aligned}
+$$
+Thus, $\log P(k \mid x)=\delta_{k}$, $\log P(l \mid x)=\delta_{l}$, so,
+$$
+\begin{aligned}
+\hat{y}(x)&=\operatorname{argmax}_{k}P(k \mid x) \\
+&=\operatorname{argmax}_{k} \log P(k \mid x) \\
+&=\operatorname{argmax}_{k} \delta_{k}(x) 
+\end{aligned}
+$$
+
+## 2.1
+From LDA, we know that LDA rule classifies to class 2 if,
+$$
+\log \frac{P(2 \mid x)}{P(1 \mid x)} > 1
+$$
+That is,
+$$
+\log \frac{\hat{\pi_{2}}}{\hat{\pi_{1}}} -\frac{1}{2}(\hat{\mu_{2}}+\hat{\mu_{1}}) \Sigma^{-1}(\hat{\mu_{2}}-\hat{\mu_{1}})+x^\intercal \Sigma^{-1}(\hat{\mu_{2}}-\hat{\mu_{1}}) > 0
+$$
+Where $\hat{\pi_{2}}=N_{2}/N$, $\hat{\pi_{1}=N_{1}/N}$, thus, the LDA rule classifies to class 2 if,
+$$
+x^\intercal \Sigma^{-1}(\hat{\mu_{2}}-\hat{\mu_{1}}) > \frac{1}{2}(\hat{\mu_{2}}+\hat{\mu_{1}}) \Sigma^{-1}(\hat{\mu_{2}}-\hat{\mu_{1}}) - \log \frac{N_{2}}{N_{1}}
+$$
+and class 1 otherwise.
+
+## 2.2
+Let $U_{i} \in \mathbb{R}^{n}$ be the class indicator vector of class i, and $U = U_{1} + U_{2}$ be the vector with all entries equal to 1. In this problem, the vector of labels becomes $Y = (-N/N_{1}) U_{1} + (N/N_{2}) U_{2}$. And the least square criterion $RSS(\beta_{0},\beta)$,
+$$
+RSS(\beta_{0}, \beta) = \sum_{i=1}^{N}(y_{i}-\beta_{0}-x_{i}^\intercal \beta)=(Y-\beta_{0}U-X\beta)^\intercal (Y-\beta_{0}U-X\beta)
+$$
+Where $X$ is a $N \times p$ matrix. To obtain the minimization of RSS, take the derivative of $RSS(\beta_{0},\beta)$ with respect to $\beta_{0}$ and $\beta$, and set them to 0,
+$$
+\nabla_{\beta} R S S = -2X^\intercal Y + 2\beta_{0} X^\intercal U + 2 X^\intercal X\beta = 0
+$$
+and
+$$
+\nabla_{\beta_{0}} R S S = -2 U^\intercal Y + 2 \beta_{0} U^\intercal U + 2 U^\intercal X \beta = -2 U^\intercal Y + 2 N \beta_{0} + 2 U^\intercal X \beta = 0
+$$
+From the second equation, we obtain that
+$$
+\hat{\beta_{0}} = \frac{1}{N}U^\intercal(Y-X\beta)
+$$
+Take this into the first equation, we obtain that
+$$
+(-\frac{1}{N}X^\intercal U U^\intercal X + X^\intercal X)\hat{\beta} = X^\intercal Y -\frac{1}{N}X^\intercal UU^\intercal Y
+$$
+And we have that $X^\intercal U_{i}=N_{i} \hat{\mu_{i}}$ for $i = 1,2$. so for the left-hand side,
+$$
+(-\frac{1}{N}X^\intercal U U^\intercal X + X^\intercal X) \hat{\beta} = \left(-\frac{1}{N}\left(N^2_1 \hat{\mu_{1}} \hat{\mu_1}^\intercal+N_1N_2 \hat{\mu_1}\hat{\mu_2}^\intercal +N_1N_2\hat{\mu_2}\hat{\mu_1}^\intercal + N^2_2\hat{\mu_2}\hat{\mu_2}^\intercal\right)+X^\intercal X\right)\hat{\beta}
+$$
+And the estimate of the covariance matrix used in LDA is given by:
+$$
+\begin{aligned}
+(N-2)\hat{\Sigma} &= \sum_{i:y_{i}=-N/N_1} (x_{i}-\hat{\mu_1})(x_i-\hat{\mu_1})^\intercal + \sum_{i:y_i=N/N_2}(x_i-\hat{\mu_2})(x_i-\hat{\mu_2})^\intercal \\
+&=X^\intercal X - N_1 \hat{\mu_1}\hat{\mu_1}^\intercal -N_2 \hat{\mu_2}\hat{\mu_2}^\intercal
+\end{aligned}
+$$
+And denote $\hat{\Sigma}_{B}=\frac{N_{1} N_{2}}{N^{2}}\left(\hat{\mu}_{2}-\hat{\mu}_{1}\right)\left(\hat{\mu}_{2}-\hat{\mu}_{1}\right)^{T}$, thus, the L.H.S. is equal to:
+$$
+\left((N-2)\hat{\Sigma} + N\Sigma_B \right) \hat{\beta}
+$$
+And the R.H.S. is:
+$$
+\begin{aligned}
+X^\intercal Y - \frac{1}{N}U^\intercal Y &= X^\intercal (-\frac{N}{N_1}U_1+\frac{N}{N_2}U_2)-\left(N_{1} \hat{\mu}_{1}+N_{2} \hat{\mu}_{2}\right)\left(-\frac{N}{N_1} N_{1}+\frac{N}{N_2} N_{2}\right) \\
+&=X^\intercal (-\frac{N}{N_1}U_1+\frac{N}{N_2}U_2) \\
+&=N(\hat{\mu_2}-\hat{\mu_1})
+\end{aligned}
+$$
+So the equation is equal to:
+$$
+\left[(N-2) \hat{\Sigma}+N \hat{\Sigma}_{B}\right] \hat{\beta}=N\left(\hat{\mu}_{2}-\hat{\mu}_{1}\right),
+$$
+Where $\hat{\Sigma}_{B}=\frac{N_{1} N_{2}}{N^{2}}\left(\hat{\mu}_{2}-\hat{\mu}_{1}\right)\left(\hat{\mu}_{2}-\hat{\mu}_{1}\right)^{T}$.
+
+## 2.3
+And let a real number $\lambda=(\hat{\mu}_{2}-\hat{\mu}_1)^\intercal \hat{\beta}$, then
+$$
+\hat{\Sigma}_B \hat{\beta} = \frac{N_1 N_2}{N^2}(\hat{\mu}_{2}-\hat{\mu}_1)(\hat{\mu}_{2}-\hat{\mu}_1)^\intercal \hat{\beta} = \frac{N_1 N_2}{N^2}(\hat{\mu}_{2}-\hat{\mu}_1) \lambda
+$$
+Hence, $\hat{\Sigma}_B \hat{\beta}$ is in the direction of $(\hat{\mu}_2 - \hat{\mu}_1)$, and from the equation,
+$$
+\begin{align}
+(N - 2) \hat{\Sigma} \hat{\beta} &= N(\hat{\mu}_2 - \hat{\mu}_1) - N \hat{\Sigma}_B \hat{\beta} \\
+&= \left(N - \frac{N_1 N_2}{N} \lambda \right)\left(\hat{\mu}_2 - \hat{\mu}_1 \right)
+\end{align}
+$$
+Thus,
+$$
+\hat{\beta} \propto \hat{\Sigma}^{-1}\left(\hat{\mu}_{2}-\hat{\mu}_{1}\right)
+$$
+Therefore the least-squares regression coefficient is identical to the LDA coefficient, up to a scalar multiple.
+
+## 3.1
+Use KNN classifier, and plot 5-fold cross-validation accuracy, here is the code 
+```{r, setup, include=FALSE}
+library(reticulate)
+use_python("usr/local/bin/python")
+```
+
+```{python, eval=FALSE}
+from random import seed
+from random import randrange
+from csv import reader
+from math import sqrt
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+# Load a CSV file
+def load_csv(filename):
+    dataset = list()
+    with open(filename, 'r') as file:
+        csv_reader = reader(file)
+        for row in csv_reader:
+            if not row:
+                continue
+            dataset.append(row)
+    return dataset
+
+
+# Convert string column to float
+def str_column_to_float(dataset, column):
+    for row in dataset:
+        row[column] = float(row[column].strip())
+
+
+# Convert string column to integer
+def str_column_to_int(dataset, column):
+    for row in dataset:
+        # print(row[column])
+        row[column] = int(row[column].strip())
+        # print(row)
+
+
+# Find the min and max values for each column
+def dataset_minmax(dataset):
+    minmax = list()
+    for i in range(len(dataset[0]) - 1):
+        col_values = [row[i] for row in dataset]
+        value_min = min(col_values)
+        value_max = max(col_values)
+        minmax.append([value_min, value_max])
+    return minmax
+
+
+# Rescale dataset columns to the range 0-1
+def normalize_dataset(dataset, minmax):
+    new = []
+    for row in dataset:
+        for i in range(len(row) - 1):
+            row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
+    new.append(row)
+    return new
+
+
+# Split a dataset into k folds
+def cross_validation_split(dataset, n_folds):
+    dataset_split = list()
+    dataset_copy = list(dataset)
+    fold_size = int(len(dataset) / n_folds)
+    for _ in range(n_folds):
+        fold = list()
+        while len(fold) < fold_size:
+            index = randrange(len(dataset_copy))
+            fold.append(dataset_copy.pop(index))
+        dataset_split.append(fold)
+    return dataset_split
+
+
+# Calculate accuracy percentage
+def accuracy_metric(actual, predicted):
+    correct = 0
+    for i in range(len(actual)):
+        if actual[i] == predicted[i]:
+            correct += 1
+    return correct / float(len(actual)) * 100.0
+
+
+# Evaluate an algorithm using a cross validation split
+def evaluate_algorithm(dataset, algorithm, n_folds, *args):
+    folds = cross_validation_split(dataset, n_folds)
+    scores = list()
+    for fold in folds:
+        train_set = list(folds)
+        train_set.remove(fold)
+        train_set = sum(train_set, [])
+        test_set = list()
+        for row in fold:
+            row_copy = list(row)
+            test_set.append(row_copy)
+            row_copy[-1] = None
+        predicted = algorithm(train_set, test_set, *args)
+        actual = [row[-1] for row in fold]
+        accuracy = accuracy_metric(actual, predicted)
+        scores.append(accuracy)
+    return scores
+
+
+# Calculate the Euclidean distance between two vectors
+def euclidean_distance(row1, row2):
+    distance = 0.0
+    for i in range(len(row1) - 1):
+        distance += (row1[i] - row2[i]) ** 2
+    return sqrt(distance)
+
+
+# Locate the most similar neighbors
+def get_neighbors(train, test_row, num_neighbors):
+    distances = list()
+    for train_row in train:
+        dist = euclidean_distance(test_row, train_row)
+        distances.append((train_row, dist))
+    distances.sort(key=lambda tup: tup[1])
+    neighbors = list()
+    for i in range(num_neighbors):
+        neighbors.append(distances[i][0])
+    return neighbors
+
+
+# Make a prediction with neighbors by max
+def predict_classification_max(train, test_row, num_neighbors):
+    neighbors = get_neighbors(train, test_row, num_neighbors)
+    output_values = [row[-1] for row in neighbors]
+    prediction = max(set(output_values), key=output_values.count)
+    return prediction
+
+
+# Make a prediction with neighbors by average
+def predict_classification_average(train, test_row, num_neighbors):
+    neighbors = get_neighbors(train, test_row, num_neighbors)
+    output_values = [row[-1] for row in neighbors]
+    prediction = round(sum(output_values) / len(output_values))
+    return prediction
+
+
+# kNN Algorithm
+def k_nearest_neighbors(train, test, num_neighbors):
+    predictions = list()
+    for row in test:
+        output = predict_classification_max(train, row, num_neighbors)
+        predictions.append(output)
+    return (predictions)
+
+
+# Test the kNN on the wine dataset
+seed(1)
+filename = 'winequality-red.csv'
+dataset = load_csv(filename)
+dataset = dataset[1:1600]
+
+# Remove the delimiter
+for i in range(len(dataset)):
+    dataset[i] = dataset[i][0].split(';')
+
+# Convert predicor column into float
+for i in range(len(dataset[0]) - 1):
+    str_column_to_float(dataset, i)
+# convert class column to integers
+str_column_to_int(dataset, len(dataset[0]) - 1)
+
+# Normalization
+normalize_dataset(dataset=dataset, minmax=dataset_minmax(dataset=dataset))
+
+# evaluate algorithm
+acc = []
+n_folds = 5
+L = 20
+for num_neighbors in range(L):
+    print("K =", num_neighbors + 1)
+    scores = evaluate_algorithm(dataset, k_nearest_neighbors, n_folds, num_neighbors + 1)
+    print('Scores: %s' % scores)
+    print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
+    acc.append((sum(scores) / float(len(scores))))
+
+x = np.arange(1, L + 1, 1)
+fig, ax = plt.subplots()
+ax.plot(x, acc)
+ax.set(xlabel='k', ylabel='acc/percent',
+       title='knn_max')
+ax.set_xticks([i + 1 for i in range(L)])
+
+fig.savefig("acc_knn_max.png")
+```
+
+The result is,
+
+![Accuracy of knn with max](./acc_knn_max.png)
+
+So from the plot, we can see that at k=1, accuracy is at maximum, but it is kind of over-fitting. When k=1 you estimate your probability based on a single sample: your closest neighbor. This is very sensitive to all sort of distortions like noise, outliers, mislabelling of data, and so on. By using a higher value for k, you tend to be more robust against those distortions. So the optimal k value should be at 4, which is at the local maximum.
+
+
+## 3.2
+Use kNN regression by taking the average ofthe levels of the nearest neighbors and rounding it to the nearest level, just change the predict_classification_max() functions to predict_classification_average(), other functions are the same,
+```{python, eval=FALSE}
+# Make a prediction with neighbors by average
+def predict_classification_average(train, test_row, num_neighbors):
+    neighbors = get_neighbors(train, test_row, num_neighbors)
+    output_values = [row[-1] for row in neighbors]
+    prediction = round(sum(output_values) / len(output_values))
+    return prediction
+```
+
+The result is,
+
+![Accuracy of knn with average](./acc_knn_average.png)
+
+After using the average, we can see that the local maximum is at k = 15. Compared to the previous one k = 4, this k is larger, so the model should be more robust than the previous. 
+
+
